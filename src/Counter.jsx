@@ -1,19 +1,36 @@
 import { useState } from "react";
 import CounterDisplay from "./CounterDisplay";
+import { useRef } from "react";
+import { useEffect } from "react";
 
 function Counter({ initialValue = 0, incrementBy = 1 }) {
   const [counter, setCounter] = useState(initialValue);
+  const nextRef = useRef(null);
+  const lastRef = useRef(null);
+  useEffect(() => {
+    if (nextRef.current !== lastRef.current) {
+      console.log(nextRef.current);
+      lastRef.current = nextRef.current;
+    }
+  }, [counter]);
 
   function handleIncrement() {
-    setCounter((c) => c + incrementBy);
+    setCounter((c) => {
+      nextRef.current = c + incrementBy > initialValue ? "up" : "down";
+      return c + incrementBy;
+    });
   }
 
   function handleDecrement() {
-    setCounter((c) => c - incrementBy);
+    setCounter((c) => {
+      nextRef.current = c - incrementBy < initialValue ? "down" : "up";
+      return c - incrementBy;
+    });
   }
 
   function handleReset() {
-    setCounter((c) => (c = initialValue));
+    setCounter(initialValue);
+    nextRef.current = "reset";
   }
   return (
     <div>
